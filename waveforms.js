@@ -1,4 +1,4 @@
-// ECG waveform generation functions without qrs_variation_3
+// waveforms.js
 
 const tValues = new Array(800).fill(0).map((_, index) => (index / 800) * 5 * Math.PI);
 const mu = 2 * Math.PI;
@@ -72,6 +72,3 @@ const waveforms = [
 ];
 
 // this is waveforms.js
-// qrsVariation1 and qrsVariation2 look very different
-// They should just have different qrs Everything else should be the same As normal ecg.
-// qrsVariation1 and qrsVariation2 are missing pWave + qrs + sWave + tWave

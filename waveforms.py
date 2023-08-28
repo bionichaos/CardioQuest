@@ -34,6 +34,20 @@ def qrs_variation_1(t):
 def qrs_variation_2(t):
     return 1.5 * np.sin(0.8 * (t - 1.5 * np.pi))**3 if 1.5 * np.pi <= t < 2.8 * np.pi else 0
 
+def qrs_variation_1(t):
+    pWave = np.sin(t) ** 2 if 0 <= t < np.pi else 0
+    qrs = refined_r_wave(t, mu, 4 * sigma, 0.5 * amplitude)
+    sWave = -0.5 * np.sin(t - 2.5 * np.pi) ** 3 if 2.5 * np.pi <= t < 3 * np.pi else 0
+    tWave = 0.5 * np.sin(t - 3 * np.pi) ** 2 if 3 * np.pi <= t < 4 * np.pi else 0
+    return 300 - (pWave + qrs + sWave + tWave) * -100
+
+def qrs_variation_2(t):
+    pWave = np.sin(t) ** 2 if 0 <= t < np.pi else 0
+    qrs = refined_r_wave(t, 1.3 * mu, sigma, 0.8 * amplitude) # Different QRS complex
+    sWave = -0.5 * np.sin(t - 2.5 * np.pi) ** 3 if 2.5 * np.pi <= t < 3 * np.pi else 0
+    tWave = 0.5 * np.sin(t - 3 * np.pi) ** 2 if 3 * np.pi <= t < 4 * np.pi else 0
+    return 300 - (pWave + qrs + sWave + tWave) * -100
+
 def no_p_wave(t):
     p_wave = 0
     qrs = refined_r_wave(t, mu, sigma, amplitude)
@@ -63,3 +77,6 @@ waveforms = [
     [no_s_wave(t) for t in t_values],
     [no_t_wave(t) for t in t_values]
 ]
+
+# this is waforms.py
+# can you convert This into javascript?

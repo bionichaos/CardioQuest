@@ -3,6 +3,36 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 let score = 0;
 let scroll_speed = 2; // Define and initialize scroll_speed
+let default_scroll_speed = 2; // Define the default scroll speed
+let normalWaveformPercentage = 40; // Percentage of normal waveforms (default: 40)
+
+function generate_new_waveform_segment() {
+    const abnormal_waveforms = [
+        qrs_variation_1, qrs_variation_2,
+        no_p_wave, no_s_wave, no_t_wave
+    ];
+    const waveform_names = [
+        "QRS Variation 1", "QRS Variation 2",
+        "No P wave", "No S wave", "No T wave"
+    ];
+
+    const isNormalWaveform = Math.random() * 100 < normalWaveformPercentage;
+
+    if (isNormalWaveform) {
+        waveform_function = generate_full_waveform;
+        waveform_type = 0; // Normal
+        console.log("Selected Waveform: Normal");
+    } else {
+        index = Math.floor(Math.random() * abnormal_waveforms.length);
+        waveform_function = abnormal_waveforms[index];
+        waveform_type = 1; // Abnormal
+        console.log(`Selected Waveform: ${waveform_names[index]}`);
+    }
+
+    new_waveform = t_values.map(waveform_function); // Use map to apply waveform function
+    return [new_waveform, waveform_type];
+}
+
 
 // Example: Draw a rectangle
 function drawRect(x, y, width, height, color) {
@@ -16,16 +46,19 @@ let tagged = []; // Define the tagged array
 
 // Define a function to fetch new waveform segments
 async function fetchNewWaveformSegment() {
-    return fetch('/generate_new_waveform')  // Make sure the URL matches the Flask route
+    return fetch('/generate_new_waveform')
         .then(response => response.json())
-        .then(data => ({
-            waveform: data.waveform,
-            waveform_type: data.waveform_type
-        }))
         .catch(error => {
             console.error('Error fetching new waveform:', error);
             return null;
         });
+}
+
+function update_scroll_speed() {
+    scroll_speed = default_scroll_speed + Math.floor(score / 50); // Adjust scroll speed based on score
+    if (scroll_speed < 1) {
+        scroll_speed = 1;
+    }
 }
 
 // Inside your game loop
@@ -43,11 +76,15 @@ async function gameLoop() {
     // Generate and append new waveform segments
     for (let i = 0; i < segmentsNeeded; i++) {
         const newWaveformData = await fetchNewWaveformSegment();
+
         if (newWaveformData) {
             waveform.push(...newWaveformData.waveform);
-            waveform_types.push(...Array(newWaveformData.waveform.length).fill(newWaveformData.waveform_type));
+            waveform_types.push(newWaveformData.waveform_type);
         }
     }
+
+    // Call the update_scroll_speed function
+    update_scroll_speed();
 
     // Draw waveforms
     const yOffset = canvas.height / 6;
@@ -87,8 +124,20 @@ canvas.addEventListener('click', (event) => {
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
 
-    // Calculate whether the click is on an abnormal waveform or not
-    // Update the score based on the result
+    // Calculate the index of the clicked waveform segment
+    const clickedIndex = Math.floor(x / scroll_speed);
+
+    // Check if the clicked waveform is abnormal
+    if (waveform_types[clickedIndex] === 1) {
+        // Abnormal waveform clicked, increase the score
+        score += 10;
+    } else {
+        // Normal waveform clicked, decrease the score
+        score -= 10;
+        if (score < 0) {
+            score = 0; // Ensure the score doesn't go negative
+        }
+    }
 
     // Send the updated score to the server
     fetch('/update_score', {
@@ -113,4 +162,6 @@ canvas.addEventListener('click', (event) => {
 // Call the game loop to start the game
 gameLoop();
 
-// Score is not going up is the main problem.
+// This is games.js file
+
+// Uncaught (in promise) TypeError: newWaveformData.waveform is not iterable (cannot read property undefined)

@@ -51,8 +51,6 @@ def scale_waveform_amplitude(waveform, middle, desired_range=200):
 
     return scaled_waveform
 
-
-
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("CardioQuest")
@@ -122,10 +120,12 @@ while running:
             # pygame.draw.circle(screen, GREEN, (t, waveform[t] + offset), 5)
             pygame.draw.circle(screen, GREEN, (t, HEIGHT - waveform[t] - offset), 5)
 
-
     screen.blit(font.render(f"Score: {score}", True, GREEN), (10, 10))
 
     pygame.display.flip()
     clock.tick(30)
 
 pygame.quit()
+
+# this is game_logic.py
+# what parts were not converted to game_logic.js?

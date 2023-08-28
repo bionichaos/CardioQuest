@@ -1,6 +1,6 @@
-document.addEventListener("DOMContentLoaded", () => {
+// game_logic.js
 
-    // Game constants
+document.addEventListener("DOMContentLoaded", () => {
     const HEIGHT = 600;
     const WIDTH = 800;
     const WHITE = "#FFFFFF";
@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const isAbnormal = Math.random() < 0.6; // 60% chance of being abnormal
 
-        if (!isAbnormal) {
+        if (!isAbnormal) { // Normal distribution 
             const waveformFunction = generateFullWaveform;
             const waveformType = 0; // Normal
             console.log("Selected Waveform: Normal");
@@ -43,15 +43,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-
     // Initialize waveform with a mix of normal and abnormal segments
     let waveform = [];
     let waveformTypes = [];
-    for (let i = 0; i < Math.floor(WIDTH / tValues.length); i++) {
-        const [newWaveform, waveformType] = generateNewWaveformSegment();
-        waveform.push(...newWaveform);
-        waveformTypes.push(...Array(newWaveform.length).fill(waveformType)); // Use the length of newWaveform
-    }
 
     let score = 0;
     let scrollSpeed = 2;
@@ -63,7 +57,9 @@ document.addEventListener("DOMContentLoaded", () => {
             scrollSpeed = 1;
         }
     }
-
+    // The scroll speed is also limited to a maximum of 10. 
+    // This is to prevent the game from becoming too difficult.
+    // where is this bit in the code?
 
     // User Input Handling
     canvas.addEventListener("click", (event) => {
@@ -80,38 +76,62 @@ document.addEventListener("DOMContentLoaded", () => {
             } else if (waveformTypes[waveformIndex] === 0) {
                 score -= 10; // Decrease score for tagging a normal segment
             }
+            
+            // Change waveform color to red when clicked and the ECG is abnormal
+            if (waveformTypes[waveformIndex] === 1 || waveformTypes[waveformIndex] === 2) {
+                waveformTypes[waveformIndex] = 2; // Tagged abnormal or previously tagged abnormal
+            }
         }
         // Update the score display element
-        const scoreDisplay = document.getElementById("score-display");
-        scoreDisplay.textContent = `Score: ${score}`;
+        // scoreDisplay.textContent = `Score: ${score}`;
     });
     
     const scoreDisplay = document.getElementById("score-display");
     let waveformIndex = 0;
+    let displayedWaveformLength = Math.floor(WIDTH / tValues.length);
+    const MAX_WAVEFORM_LENGTH = 10000; // Adjusting this value will help ensure that the player doesn't see repeated waveform segments too frequently during gameplay.
 
     // Main game loop
     function gameLoop() {
         ctx.clearRect(0, 0, WIDTH, HEIGHT);
+        
+        // Check if the player is about to reach the end of the current segments
+        // const nearEnd = waveform.length - waveformIndex < displayedWaveformLength;
+        const nearEnd = waveform.length - waveformIndex < displayedWaveformLength + scrollSpeed;
 
+    
+        // If the player is about to reach the end of the current segments,
+        // add the new waveform segment to the waveform and waveformTypes arrays
+        if (nearEnd) {
+            const [newWaveform, waveformType] = generateNewWaveformSegment();
+            waveform.push(...newWaveform);
+            waveformTypes.push(...Array(newWaveform.length).fill(waveformType));
+        }
+    
         // Move to the next waveform segment
-        waveformIndex = (waveformIndex + scrollSpeed) % waveform.length;
+        waveformIndex += scrollSpeed;
+        if (waveformIndex >= waveform.length) {
+            waveformIndex -= waveform.length;
+        }
+    
+        // Reset the canvas path
+        ctx.beginPath();
 
         // Draw ECG waveform
-        ctx.beginPath();
         for (let i = 0; i < WIDTH; i++) {
             const waveformPos = (waveformIndex + i) % waveform.length;
             const x = i;
             const y = HEIGHT - waveform[waveformPos];
-
+    
             // Set color based on waveform type
-            if (waveformTypes[i] === 1) {
-                ctx.strokeStyle = RED; // Abnormal or tagged abnormal
-            } else if (waveformTypes[i] === 2) {
-                ctx.strokeStyle = RED; // Tagged abnormal
-            } else {
-                ctx.strokeStyle = BLUE; // Normal
+            let segmentColor = BLUE;
+            if (i === 0 || !tagged.includes(waveformPos)) {
+                segmentColor = GREEN; // Default color if not tagged
+            } else if (waveformTypes[waveformPos] === 1 || waveformTypes[waveformPos] === 2) {
+                segmentColor = RED; // Tagged abnormal or previously tagged abnormal
             }
-
+            ctx.strokeStyle = segmentColor;
+    
             if (i === 0) {
                 ctx.moveTo(x, y);
             } else {
@@ -119,16 +139,16 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
         ctx.stroke();
-
+    
         // Update and display score
         updateScrollSpeed();
-        ctx.fillStyle = WHITE;
+        ctx.fillStyle = RED;
         ctx.font = font;
         ctx.fillText(`Score: ${score}`, 10, 40);
-
+    
         // Update the score display element
-        scoreDisplay.textContent = `Score: ${score}`;
-
+        // scoreDisplay.textContent = `Score: ${score}`;
+    
         requestAnimationFrame(gameLoop);
     }
 
@@ -136,18 +156,23 @@ document.addEventListener("DOMContentLoaded", () => {
     gameLoop();
 });
 
+// The drawing on canvas is a bit jumpy.
 
-// this is game_logic.js
-// make score visible on screen
-// change the logic of labeling abnormal ecg
-// when mouse clicking the screen,
-// if the current waveform ECG is abnormal, change the waveform color to red and add 10 to the score
-// if the current waveform ECG is normal, and the mouse was clicked, reduce the score by 10 pionts
-// display updated score on the canvas
-// make sure the score stays displayed on screen
-// scroll the waveforms at speed of 1
-// if 50 points are reached speed+1
-// always display 1 waveform on the canvas
-// make sure there 40% normal and 60% abnormal waveforms
-// make sure abnormal waveforms are chosen randomly
-// all the waveforms scrolled onto the screen are the same.
+// Double-check that the waveformTypes array is properly initialized and updated for each segment.
+
+// Verify that the tagged array is correctly tracking which waveform segments have been tagged.
+
+// Make sure that the click event coordinates are being calculated correctly to determine the waveform index being clicked.
+
+// Check for any unintended mutations or reassignments of variables that might be affecting the score calculation.
+
+// Ensure that the generateNewWaveformSegment function returns the appropriate waveform type (1 for abnormal) when an abnormal waveform is generated.
+
+// Make sure the waveform is selected based on the 60% abnormal
+// within the sixty percent the abnormal waveform to be selected randomly.
+
+// Before the mouse is pressed, do not reveal actual colors based on currentWaveformType. 
+// All colors should be default before the mouse is clicked.
+
+// Generate the complete code without any missing bits or placeholders. 
+// include all the constants and functions. Include all the code that remains the same.

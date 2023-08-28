@@ -1,0 +1,21 @@
+Sure, here are the prompts you could use to generate the code for your web application using GPT-3.5:
+
+1. **Generate Flask App and Routes**:
+   Prompt: Create a Flask web application named "ECGQuest" with routes for the main page, serving the game JavaScript, generating new waveform data, and updating the score.
+
+2. **HTML Template**:
+   Prompt: Design an HTML template for the "ECGQuest" web application. It should include a canvas for the game, a score display, and any necessary JavaScript and CSS references.
+
+3. **CSS Styling**:
+   Prompt: Write CSS styles to format the "ECGQuest" web application. Style the body with a sans-serif font and centered alignment. Apply a black border to the game canvas, and set a font size of 24 pixels for the score display.
+
+4. **JavaScript Logic**:
+   Prompt: Develop JavaScript logic for the "ECGQuest" game. Implement functions for drawing waveforms, updating the score, fetching new waveform data, and handling user interactions.
+
+5. **Canvas Click Event**:
+   Prompt: Add a click event listener to the game canvas in the "ECGQuest" web application. Implement logic to determine whether the user clicked on a normal or abnormal waveform and update the score accordingly.
+
+6. **Main Loop and Animation**:
+   Prompt: Implement a game loop in JavaScript for the "ECGQuest" game. This loop should continuously update the canvas by clearing it, drawing waveforms, updating the scroll speed, and handling tagged points.
+
+By providing these prompts to GPT-3.5, you can generate the code for your web application based on the descriptions you've provided earlier. Make sure to specify any additional details or preferences you have in mind when interacting with the prompts.

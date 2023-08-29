@@ -1,0 +1,21 @@
+// Double-check that the waveformTypes array is properly initialized and updated for each segment.
+
+// Verify that the tagged array is correctly tracking which waveform segments have been tagged.
+
+// Make sure that the click event coordinates are being calculated correctly to determine the waveform index being clicked.
+
+// Check for any unintended mutations or reassignments of variables that might be affecting the score calculation.
+
+// Ensure that the generateNewWaveformSegment function returns the appropriate waveform type (1 for abnormal) when an abnormal waveform is generated.
+
+// Make sure the waveform is selected based on the 60% abnormal
+// within the sixty percent the abnormal waveform to be selected randomly.
+
+// Before the mouse is pressed, do not reveal actual colors based on currentWaveformType. 
+// All colors should be default before the mouse is clicked.
+
+// Generate the complete code without any missing bits or placeholders. 
+// include all the constants and functions. Include all the code that remains the same.
+
+// The drawing on canvas suddenly changes when a new waveformFunction is selected.
+// Make sure the current waveform completes showing and then roll in the next one.

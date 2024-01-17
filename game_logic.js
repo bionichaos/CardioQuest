@@ -3,149 +3,185 @@
 document.addEventListener("DOMContentLoaded", () => {
     const HEIGHT = 600;
     const WIDTH = 800;
-    const WHITE = "#FFFFFF";
-    const RED = "#FF0000";
-    const GREEN = "#00FF00";
-    const BLUE = "#0000FF";
 
-    // Initialize canvas and game variables
+    // colors
+    const BLUE = "#0477bf";
+    const GREEN = "#04bf68";
+    const YELLOW = "#f2c641";
+    const RED = "#f25835";
+    const BLACK = "#0d0d0d";
+
     const canvas = document.getElementById("game-canvas");
-    // canvas.width = WIDTH;
-    // canvas.height = HEIGHT;
-    // document.body.appendChild(canvas);
+    canvas.width = WIDTH;
+    canvas.height = HEIGHT;
     const ctx = canvas.getContext("2d");
     const font = "36px sans-serif";
 
-    function generateNewWaveformSegment() {
-        const abnormalWaveforms = [
-            qrsVariation1, qrsVariation2,
-            noPWave, noSWave, noTWave
-        ];
-        const waveformNames = [
-            "QRS Variation 1", "QRS Variation 2",
-            "No P wave", "No S wave", "No T wave"
-        ];
+    let score = 0; // Initialize the player's score
+    let gameSpeed = 2; // Initialize the game speed (you can adjust this value)
 
-        const isAbnormal = Math.random() < 0.6; // 60% chance of being abnormal
+    let waveformType; // 0 for normal, 1 for abnormal
+    let currentWaveform = []; // Store the current waveform points
 
-        if (!isAbnormal) { // Normal distribution 
-            const waveformFunction = generateFullWaveform;
-            const waveformType = 0; // Normal
-            console.log("Selected Waveform: Normal");
-            return [tValues.map(t => waveformFunction(t)), waveformType];
-        } else {
-            const index = Math.floor(Math.random() * abnormalWaveforms.length);
-            const waveformFunction = abnormalWaveforms[index];
-            const waveformType = 1; // Abnormal
-            console.log(`Selected Waveform: ${waveformNames[index]}`);
-            const newWaveform = tValues.map(t => waveformFunction(t));
-            return [newWaveform, waveformType];
-        }
-    }
+    // Define variables to manage the scrolling waveform
+    let waveformX = -WIDTH; // Initial x-coordinate of the waveform
+    // let waveformX = -currentWaveform.length; // Set initial position off the left edge
 
-    // Generate initial set of waveforms
-    let waveform = [];
-    let waveformTypes = [];
-    const initialNumWaveforms = 2; // Adjust as needed
-    for (let i = 0; i < initialNumWaveforms; i++) {
-        const [newWaveform, waveformType] = generateNewWaveformSegment();
-        waveform.push(...newWaveform);
-        waveformTypes.push(...Array(newWaveform.length).fill(waveformType));
-    }
-
-    function updateScrollSpeed() {
-        scrollSpeed = Math.floor(score / 50) + 1;
-        if (scrollSpeed < 1) {
-            scrollSpeed = 1;
-        }
-    }
-
-    let score = 0;
-    let scrollSpeed = 2;
-    let tagged = [];
-
-    // User Input Handling
-    canvas.addEventListener("click", (event) => {
-        // Calculate the x-coordinate relative to the canvas
-        const canvasX = event.clientX - canvas.getBoundingClientRect().left;
-    
-        // Calculate the index of the clicked waveform segment
-        const waveformIndex = Math.floor((canvasX / WIDTH) * waveform.length);
-    
-        // Check if the calculated index is within a valid range
-        if (waveformIndex >= 0 && waveformIndex < waveform.length) {
-            const clickedSegmentType = waveformTypes[waveformIndex];
-    
-            // Check if the clicked segment is abnormal and not already tagged
-            if (clickedSegmentType === 1 && !tagged.includes(waveformIndex)) {
-                tagged.push(waveformIndex);
-                waveformTypes[waveformIndex] = 2; // Mark as tagged abnormal
-                score += 10; // Increase score for tagging an abnormal segment
-            } else if (clickedSegmentType === 0) {
-                score -= 10; // Decrease score for tagging a normal segment
-            }
-    
-            // Change waveform color to red when clicked and the ECG is abnormal
-            if (clickedSegmentType === 1 || clickedSegmentType === 2) {
-                waveformTypes[waveformIndex] = 2; // Mark as tagged abnormal or previously tagged abnormal
-            }
-        }
-    });
-    
-    let waveformIndex = 0;
-    let displayedWaveformLength = Math.floor(WIDTH / tValues.length);
-    const MAX_WAVEFORM_LENGTH = 10000; // Adjusting this value will help ensure that the player doesn't see repeated waveform segments too frequently during gameplay.
-
-    // Main game loop
-    function gameLoop() {
-        ctx.clearRect(0, 0, WIDTH, HEIGHT);
-
-        // Move to the next waveform segment
-        waveformIndex += scrollSpeed;
-        if (waveformIndex >= waveform.length/2) {
-            // waveformIndex -= waveform.length;
-            // Generate and append new waveforms to ensure continuity
-            const [newWaveform, waveformType] = generateNewWaveformSegment();
-            waveform.push(...newWaveform);
-            waveformTypes.push(...Array(newWaveform.length).fill(waveformType));
-        }
-
-        // Reset the canvas path
+    function DrawWaveform(x, y, waveformColor) {
+        ctx.strokeStyle = waveformColor;
+        ctx.lineWidth = 5;
+        
         ctx.beginPath();
+        // ctx.moveTo(x, y); // Move the starting point to (x, y)
+    
+        // Loop through the currentWaveform points and draw the waveform
+        for (let i = 0; i < currentWaveform.length; i++) {
+            ctx.lineTo(x + i, y - currentWaveform[i]); // Draw a line segment
+        }
+    
+        ctx.stroke();
+        // ctx.closePath();
+    }    
 
-        // Draw ECG waveform
-        for (let i = 0; i < WIDTH; i++) {
-            const waveformPos = (waveformIndex + i) % waveform.length;
-            const x = i;
-            const y = HEIGHT - waveform[waveformPos];
+    // Function to draw the score
+    function drawScore() {
+        ctx.fillStyle = BLUE;
+        ctx.font = `bold ${font}`;
+        ctx.fillText(`Score: ${score}`, 40, 40);
+    }
 
-            // Set color based on waveform type
-            let segmentColor = BLUE;
-            if (i === 0 || !tagged.includes(waveformPos)) {
-                segmentColor = GREEN; // Default color if not tagged
-            } else if (waveformTypes[waveformPos] === 1 || waveformTypes[waveformPos] === 2) {
-                segmentColor = RED; // Tagged abnormal or previously tagged abnormal
-            }
-            ctx.strokeStyle = segmentColor;
+    // Function to clear the canvas
+    function clearCanvas() {
+        // ctx.clearRect(waveformX, 0, currentWaveform.length, HEIGHT);
+        ctx.clearRect(0, 0, WIDTH, HEIGHT);
+    }    
 
-            if (i === 0) {
-                ctx.moveTo(x, y);
-            } else {
-                ctx.lineTo(x, y);
+
+    // Define variables for different types of scores
+    // let score = 0;
+    let hits = 0;
+    let falseAlarms = 0;
+    let correctRejections = 0;
+    let misses = 0;
+
+    let currentWaveformClicked = false;
+    let waveformCounted = false;
+
+    // Function to handle user clicks
+    function handleClick(event) {
+        // Check if the current waveform has already been clicked
+        if (!currentWaveformClicked) {
+            if (event.clientX >= waveformX && event.clientX <= waveformX + currentWaveform.length) {
+                if (waveformType === 1) {
+                    // HIT: Player clicked on an abnormal segment, increase score
+                    hits++;
+                } else {
+                    // FALSE ALARM: Player clicked on a normal segment, increase false alarms
+                    falseAlarms++;
+                }
+                // Mark the current waveform as clicked
+                currentWaveformClicked = true;
+
+                // Update the overall score based on your scoring logic
+                score = hits * 10 - falseAlarms * 10 + correctRejections * 10 - misses * 10;
+                score = Math.max(score, -50); // Limit the score to not drop below -100
             }
         }
-        ctx.stroke();
+    }
 
-        // Update and display score
-        updateScrollSpeed();
+    // Add a click event listener to the canvas
+    canvas.addEventListener("click", handleClick);
+
+    // In the game loop or a timer, check if the player hasn't interacted and update correct rejections and misses accordingly
+    function updateCorrectRejectionsAndMisses() {
+        
+        // Check if the current waveform has completely scrolled off the canvas
+        // if (waveformX < -currentWaveform.length) {
+        if (waveformX <= -currentWaveform.length && !waveformCounted) {
+            // console.log(`Waveform Type: ${waveformType}`);
+            if (!waveformCounted) {
+                if (waveformType === 0 && !currentWaveformClicked) {
+                    // CORRECT REJECTION: Player correctly didn't click on a normal segment
+                    correctRejections++;
+                } else if (waveformType === 1 && !currentWaveformClicked) {
+                    // MISS: Player missed clicking on an abnormal segment
+                    misses++;
+                }
+                // Mark the current waveform as counted
+                waveformCounted = true;
+    
+                // Reset the flags for the next waveform
+                currentWaveformClicked = false;
+    
+                // Update the overall score based on your scoring logic
+                score = hits * 10 - falseAlarms * 10 + correctRejections * 10 - misses * 10;
+                score = Math.max(score, -50); // Limit the score to not drop below -100
+            }
+        }
+    }
+
+    // Function to display all counters on the canvas
+    function drawCounters() {
+        // Hits and correct rejections in green
+        ctx.fillStyle = GREEN;
+        // ctx.font = `bold ${font}`; // Make the font bold
+        ctx.fillText(`Hits: ${hits}`, 40, 80);
+        ctx.fillText(`Correct Rejections: ${correctRejections}`, 40, 160);
+    
+        // False alarms and misses in red
         ctx.fillStyle = RED;
-        ctx.font = font;
-        ctx.fillText(`Score: ${score}`, 10, 40);
+        ctx.fillText(`False Alarms: ${falseAlarms}`, 40, 120);
+        ctx.fillText(`Misses: ${misses}`, 40, 200);
+    }
 
+    // Game loop that scrolls a waveform across the canvas using GenerateWaveform
+    function gameLoop() {
+        clearCanvas();
+
+        // Increase game speed based on the player's score
+        gameSpeed = 5 + Math.floor(score / 50);
+
+        // Move the waveform leftward (scrolling effect)
+        waveformX -= gameSpeed;
+
+        // Call the function to update correct rejections and misses at the beginning of the loop
+        updateCorrectRejectionsAndMisses();
+    
+        // Draw the current waveform
+        const waveformY = HEIGHT + 100; // You can adjust the vertical position
+        DrawWaveform(waveformX, waveformY, BLACK);
+    
+        // Check if the waveform has completely scrolled off the canvas
+        if (waveformX < -currentWaveform.length) {
+            // Generate a new waveform
+            let [newWaveform, newWaveformType] = GenerateWaveform();
+
+            waveformCounted = false;
+            currentWaveformClicked = false;
+
+            // Set the x-coordinate for the new waveform
+            waveformX = WIDTH; // Starts just off the right edge
+        
+            currentWaveform = newWaveform;
+            waveformType = newWaveformType;
+
+            console.log(`Waveform Type: ${waveformType}`);
+        }
+    
+        // Draw the score
+        drawScore();
+
+        // Draw all counters on the canvas
+        drawCounters();
+
+        // Request the next animation frame
         requestAnimationFrame(gameLoop);
     }
+
     // Start the game loop
     gameLoop();
 });
 
-// this is game_logic.js
+// change the code to ensure the correct rejections and misses counters are updated correctly
+// updateCorrectRejectionsAndMisses need to change
+// problem is that counting is happening before the waveform finished scrolling across the canvas

@@ -1,5 +1,4 @@
-// waveforms.js
-
+// this is waveforms.js
 const tValues = new Array(800).fill(0).map((_, index) => (index / 800) * 5 * Math.PI);
 const mu = 2 * Math.PI;
 const sigma = 0.2;
@@ -71,4 +70,26 @@ let waveforms = [
     tValues.map(t => noTWave(t))
 ];
 
+function GenerateWaveform() {
+    const abnormalWaveforms = [
+        qrsVariation1, qrsVariation2,
+        noPWave, noSWave, noTWave
+    ];
+    const waveformNames = [
+        "QRS Variation 1", "QRS Variation 2",
+        "No P wave", "No S wave", "No T wave"
+    ];
+    const isAbnormal = Math.random() < 0.6;
+    if (!isAbnormal) {
+        const waveformFunction = generateFullWaveform;
+        const waveformType = 0; // Normal
+        return [tValues.map(t => waveformFunction(t)), waveformType];
+    } else {
+        const index = Math.floor(Math.random() * abnormalWaveforms.length);
+        const waveformFunction = abnormalWaveforms[index];
+        const waveformType = 1; // Abnormal
+        const newWaveform = tValues.map(t => waveformFunction(t));
+        return [newWaveform, waveformType];
+    }
+}
 // this is waveforms.js

@@ -1,18 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+    <meta property="og:title" content="CardioQuest - ECG Scoring Game">
+    <meta property="og:description" content="CardioQuest is an interactive challenge that tests your ability to identify abnormal 
+      electrocardiogram (ECG) patterns.">
+    <meta property="og:image" content="../Bionichaos_Images/ECG_Scoring_Game.jpg">
+    <meta property="og:image" content="https://bionichaos.com/Bionichaos_Images/ECG_Scoring_Game.jpg">
+
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CardioQuest</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-</head>
-<body>
-    <h1>Welcome to CardioQuest!</h1>
-    <p>Click on abnormal ECG patterns and avoid clicking on normal ECG.</p>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
-    <p id="score">Score: 0</p>
-    <script src="{{ url_for('static', filename='game.js') }}"></script>
-</body>
-</html>
+    <title>CardioQuest ECG Waveform Scoring Game</title>
 
-<!-- this is index.html file -->
+    <!-- <link rel="stylesheet" href="styles.css"> -->
+    <link rel="stylesheet" type="text/css" href="../styles.css">
+
+    <script src="waveforms.js"></script>
+    <script src="game_logic.js"></script>
+</head>
+
+<body>
+    <header>
+        <div class="container flex-container">
+            <a href="../" id="logo-container">
+                <img src="../Bionichaos_Images/Logo.png" alt="Bionichaos" id="logo">
+            </a>
+            <nav>
+                <div id="menuToggle">
+                    <input type="checkbox" id="toggle" aria-label="Menu Toggle" title="Menu Toggle" />
+                    <label for="toggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </label>
+                </div>
+                <ul id="menu">
+                    <li class="current"><a href="..\./">Home</a></li>
+                    <li><a href="../About">About</a></li>
+                    <li><a href="../Contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <script src="../script.js"></script>
+
+    <h2>Find abnormal ECG patterns! Avoid clicking on normal ECG.</h2>
+    <canvas id="game-canvas" width="800" height="600"></canvas>
+
+    <h1>ECG Waveform Game</h1>
+    <p>ECG Waveform Game is an interactive challenge that tests your ability to identify abnormal electrocardiogram
+        (ECG) patterns. In this game, you'll be presented with a continuous scrolling display of ECG waveforms on a
+        canvas. Your task is to carefully observe the scrolling ECG patterns and quickly identify abnormal segments.
+        Abnormal segments can include variations in the QRS complex, missing P waves, absent S waves, or no T waves.
+        Normal segments will also be present. To tag an abnormal segment, click on it when it aligns with the cursor.
+        However, be cautious not to click on normal segments, as this will result in a score deduction. Your score
+        increases when you accurately tag an abnormal segment, but decreases when you mistakenly tag a normal segment.
+        As you accumulate points, the speed of the scrolling waveforms will adjust, making the game progressively more
+        challenging. Keep an eye on the 'Score' display to track your progress and aim for the highest score possible!
+    </p>
+
+    <h2>Game Rules:</h2>
+    <ol>
+        <li>Identify and click on abnormal ECG waveform segments as they scroll across the canvas.</li>
+        <li>Avoid clicking on normal ECG waveform segments to prevent score deductions.</li>
+        <li>Clicking on an abnormal segment earns you points, while clicking on a normal segment reduces points.</li>
+        <li>The game speed increases as your score goes up, making it more challenging.</li>
+        <li>Continuously monitor the 'Score' display to track your current score.</li>
+        <li>The game ends when you decide to stop or when you reach a specified score goal.</li>
+        <li>Aim to achieve the highest score and demonstrate your skill in recognizing abnormal ECG patterns!</li>
+    </ol>
+
+	<script crossorigin="anonymous">
+        setTimeout(function() {
+            var script = document.createElement('script');
+            script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5059340394452084";
+            document.head.appendChild(script);
+        }, 10000);
+    </script>
+</body>
+
+</html>

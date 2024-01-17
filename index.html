@@ -7,13 +7,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ECG Waveform Game</title>
     <script src="waveforms.js"></script>
-    <script src="game_logic.js"></script>
-    <!-- <script type="module" src="game_logic_setup.js" defer></script>
-    <script type="module" src="game_logic_update.js" defer></script> -->
-    
+    <script src="game_logic.js"></script>    
 </head>
 <body>
-    <!-- <canvas id="game-canvas"></canvas> -->
-    <!-- <p id="score-display"></p> -->
+    <p id="instructions">Find abnormal ECG patterns! Avoid clicking on normal ECG.</p>
+    <canvas id="game-canvas" width="800" height="600"></canvas>
+
+    <h1>ECG Waveform Game</h1>
+    <p>ECG Waveform Game is an interactive challenge that tests your ability to identify abnormal electrocardiogram (ECG) patterns. In this game, you'll be presented with a continuous scrolling display of ECG waveforms on a canvas. Your task is to carefully observe the scrolling ECG patterns and quickly identify abnormal segments. Abnormal segments can include variations in the QRS complex, missing P waves, absent S waves, or no T waves. Normal segments will also be present. To tag an abnormal segment, click on it when it aligns with the cursor. However, be cautious not to click on normal segments, as this will result in a score deduction. Your score increases when you accurately tag an abnormal segment, but decreases when you mistakenly tag a normal segment. As you accumulate points, the speed of the scrolling waveforms will adjust, making the game progressively more challenging. Keep an eye on the 'Score' display to track your progress and aim for the highest score possible!</p>
+
+    <h2>Game Rules:</h2>
+    <ol>
+        <li>Identify and click on abnormal ECG waveform segments as they scroll across the canvas.</li>
+        <li>Avoid clicking on normal ECG waveform segments to prevent score deductions.</li>
+        <li>Clicking on an abnormal segment earns you points, while clicking on a normal segment reduces points.</li>
+        <li>The game speed increases as your score goes up, making it more challenging.</li>
+        <li>Continuously monitor the 'Score' display to track your current score.</li>
+        <li>The game ends when you decide to stop or when you reach a specified score goal.</li>
+        <li>Aim to achieve the highest score and demonstrate your skill in recognizing abnormal ECG patterns!</li>
+    </ol>
 </body>
 </html>

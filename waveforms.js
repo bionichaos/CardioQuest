@@ -62,7 +62,7 @@ function noTWave(t) {
     return 300 - (pWave + qrs + sWave + tWave) * -100;
 }
 
-const waveforms = [
+let waveforms = [
     tValues.map(t => generateFullWaveform(t)),
     tValues.map(t => generateFullWaveform(t, qrsVariation1)),
     tValues.map(t => generateFullWaveform(t, qrsVariation2)),

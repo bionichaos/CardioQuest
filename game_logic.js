@@ -181,7 +181,3 @@ document.addEventListener("DOMContentLoaded", () => {
     // Start the game loop
     gameLoop();
 });
-
-// change the code to ensure the correct rejections and misses counters are updated correctly
-// updateCorrectRejectionsAndMisses need to change
-// problem is that counting is happening before the waveform finished scrolling across the canvas
